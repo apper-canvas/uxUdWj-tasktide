@@ -9,7 +9,7 @@ const MainFeature = ({ tasks, onAddTask, onToggleTask, onDeleteTask, onUpdateTas
   const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'medium' });
   const [editingTask, setEditingTask] = useState(null);
   const [filter, setFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortBy, setSortBy] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
   const [errorMessage, setErrorMessage] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -78,8 +78,8 @@ const MainFeature = ({ tasks, onAddTask, onToggleTask, onDeleteTask, onUpdateTas
   // Filter and sort tasks
   const filteredTasks = tasks.filter(task => {
     if (filter === 'all') return true;
-    if (filter === 'completed') return task.isCompleted;
-    if (filter === 'pending') return !task.isCompleted;
+    if (filter === 'completed') return task.is_completed;
+    if (filter === 'pending') return !task.is_completed;
     return true;
   });
   
@@ -97,9 +97,9 @@ const MainFeature = ({ tasks, onAddTask, onToggleTask, onDeleteTask, onUpdateTas
         : b.title.localeCompare(a.title);
     }
     
-    // Default sort by createdAt
-    const dateA = new Date(a.createdAt);
-    const dateB = new Date(b.createdAt);
+    // Default sort by created_at
+    const dateA = new Date(a.created_at);
+    const dateB = new Date(b.created_at);
     return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
   });
   
@@ -281,14 +281,14 @@ const MainFeature = ({ tasks, onAddTask, onToggleTask, onDeleteTask, onUpdateTas
         <div className="p-4 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700 flex justify-between items-center">
           <div className="flex gap-4">
             <button 
-              onClick={() => toggleSort('createdAt')}
+              onClick={() => toggleSort('created_at')}
               className={`flex items-center gap-1 text-sm font-medium ${
-                sortBy === 'createdAt' ? 'text-primary' : 'text-surface-600 dark:text-surface-400'
+                sortBy === 'created_at' ? 'text-primary' : 'text-surface-600 dark:text-surface-400'
               }`}
             >
               <Clock size={16} />
               <span>Date</span>
-              {sortBy === 'createdAt' && (
+              {sortBy === 'created_at' && (
                 sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />
               )}
             </button>
@@ -348,25 +348,25 @@ const MainFeature = ({ tasks, onAddTask, onToggleTask, onDeleteTask, onUpdateTas
                   exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
                   transition={{ duration: 0.2 }}
                   className={`p-4 flex items-start gap-3 ${
-                    task.isCompleted ? 'bg-surface-50/50 dark:bg-surface-800/50' : ''
+                    task.is_completed ? 'bg-surface-50/50 dark:bg-surface-800/50' : ''
                   }`}
                 >
                   <button
                     onClick={() => onToggleTask(task.id)}
                     className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                      task.isCompleted 
+                      task.is_completed 
                         ? 'bg-secondary border-secondary text-white' 
                         : 'border-surface-400 dark:border-surface-600 hover:border-secondary dark:hover:border-secondary'
                     }`}
                   >
-                    {task.isCompleted && <Check size={12} />}
+                    {task.is_completed && <Check size={12} />}
                   </button>
                   
                   <div className="flex-grow min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <h4 className={`font-medium break-words ${
-                          task.isCompleted 
+                          task.is_completed 
                             ? 'text-surface-500 dark:text-surface-500 line-through' 
                             : 'text-surface-800 dark:text-surface-200'
                         }`}>
@@ -375,7 +375,7 @@ const MainFeature = ({ tasks, onAddTask, onToggleTask, onDeleteTask, onUpdateTas
                         
                         {task.description && (
                           <p className={`mt-1 text-sm break-words ${
-                            task.isCompleted 
+                            task.is_completed 
                               ? 'text-surface-500 dark:text-surface-600' 
                               : 'text-surface-600 dark:text-surface-400'
                           }`}>
@@ -389,7 +389,7 @@ const MainFeature = ({ tasks, onAddTask, onToggleTask, onDeleteTask, onUpdateTas
                           </span>
                           
                           <span className="text-xs text-surface-500 dark:text-surface-500">
-                            {new Date(task.createdAt).toLocaleDateString()}
+                            {new Date(task.created_at).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
@@ -402,10 +402,10 @@ const MainFeature = ({ tasks, onAddTask, onToggleTask, onDeleteTask, onUpdateTas
                       whileTap={{ scale: 0.9 }}
                       onClick={() => handleEdit(task)}
                       className="p-1.5 rounded-full text-surface-500 hover:text-primary hover:bg-surface-100 dark:hover:bg-surface-800"
-                      disabled={task.isCompleted}
+                      disabled={task.is_completed}
                       aria-label="Edit task"
                     >
-                      <Edit size={16} className={task.isCompleted ? 'opacity-50' : ''} />
+                      <Edit size={16} className={task.is_completed ? 'opacity-50' : ''} />
                     </motion.button>
                     
                     <motion.button

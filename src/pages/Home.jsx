@@ -1,62 +1,79 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MainFeature from '../components/MainFeature';
+import { useTasks } from '../contexts/TaskContext';
+import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  });
+  const { user } = useAuth();
+  const { tasks, stats, addTask, toggleTaskCompletion, deleteTask, updateTask } = useTasks();
   
-  const [stats, setStats] = useState({
-    total: 0,
-    completed: 0,
-    pending: 0
-  });
-  
-  useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-    
-    // Update stats
-    const completed = tasks.filter(task => task.isCompleted).length;
-    setStats({
-      total: tasks.length,
-      completed,
-      pending: tasks.length - completed
-    });
-  }, [tasks]);
-  
-  const addTask = (newTask) => {
-    setTasks(prevTasks => [
-      ...prevTasks,
-      {
-        ...newTask,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-        isCompleted: false
-      }
-    ]);
-  };
-  
-  const toggleTaskCompletion = (id) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.id === id ? { ...task, isCompleted: !task.isCompleted } : task
-      )
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-16 max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <h1 className="text-4xl font-bold mb-6 text-surface-800 dark:text-surface-100">
+            Welcome to TaskTide
+          </h1>
+          <p className="text-xl text-surface-600 dark:text-surface-400 mb-8 max-w-2xl mx-auto">
+            The simple, effective way to manage your tasks and boost productivity.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Link to="/signin" className="btn btn-primary">
+              Sign In
+            </Link>
+            <Link to="/signup" className="btn btn-outline">
+              Create Account
+            </Link>
+          </div>
+          
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="card p-6">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
+                <svg className="w-6 h-6 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-center mb-2">Create Tasks</h3>
+              <p className="text-surface-600 dark:text-surface-400 text-center">
+                Easily add new tasks with titles, descriptions, and priority levels.
+              </p>
+            </div>
+            
+            <div className="card p-6">
+              <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4 mx-auto">
+                <svg className="w-6 h-6 text-secondary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-center mb-2">Organize</h3>
+              <p className="text-surface-600 dark:text-surface-400 text-center">
+                Sort and filter your tasks by date, priority, or completion status.
+              </p>
+            </div>
+            
+            <div className="card p-6">
+              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4 mx-auto">
+                <svg className="w-6 h-6 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-center mb-2">Track Progress</h3>
+              <p className="text-surface-600 dark:text-surface-400 text-center">
+                Monitor your productivity with visual stats and completion metrics.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     );
-  };
-  
-  const deleteTask = (id) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
-  };
-  
-  const updateTask = (updatedTask) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.id === updatedTask.id ? { ...task, ...updatedTask, updatedAt: new Date().toISOString() } : task
-      )
-    );
-  };
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
